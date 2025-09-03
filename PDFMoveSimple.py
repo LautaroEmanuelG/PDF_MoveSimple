@@ -3,8 +3,7 @@
 PDF Content Shifter - Simple Version
 ===================================
 
-Script corregido para mover contenido de PDFs.
-Utiliza el método show_pdf_page para mantener calidad vectorial.
+Script simplificado para mover contenido de PDFs sin problemas de codificación.
 """
 
 import sys
@@ -17,9 +16,8 @@ class PDFProcessor:
     def __init__(self):
         self.input_folder = Path(INPUT_FOLDER)
         self.output_folder = Path(OUTPUT_FOLDER)
-        # Convertir mm a puntos PDF (1 mm = 2.834645 puntos)
-        self.displacement_x = DISPLACEMENT_X_MM * 2.834645
-        self.displacement_y = DISPLACEMENT_Y_MM * 2.834645
+        self.displacement_x = DISPLACEMENT_X_MM * 2.834645  # mm a puntos
+        self.displacement_y = DISPLACEMENT_Y_MM * 2.834645  # mm a puntos
 
     def setup_directories(self):
         """Crear directorios necesarios"""
@@ -33,51 +31,34 @@ class PDFProcessor:
         return list(self.input_folder.glob("*.pdf"))
 
     def process_pdf(self, input_path):
-        """Procesar un archivo PDF usando show_pdf_page"""
+        """Procesar un archivo PDF"""
         try:
-            # Abrir PDF original
-            source_doc = fitz.open(input_path)
-
-            # Crear documento de destino
-            dest_doc = fitz.open()
+            # Abrir PDF
+            doc = fitz.open(input_path)
 
             # Procesar cada página
-            for page_num in range(len(source_doc)):
-                source_page = source_doc[page_num]
-                page_rect = source_page.rect
+            for page_num in range(len(doc)):
+                page = doc[page_num]
 
-                # Crear nueva página
-                dest_page = dest_doc.new_page(
-                    width=page_rect.width, height=page_rect.height)
+                # Crear una matriz de transformación
+                matrix = fitz.Matrix(
+                    1, 0, 0, 1, self.displacement_x, self.displacement_y)
 
-                # Calcular rectángulo de destino con desplazamiento
-                dest_rect = fitz.Rect(
-                    self.displacement_x,
-                    self.displacement_y,
-                    page_rect.width + self.displacement_x,
-                    page_rect.height + self.displacement_y
-                )
+                # Aplicar transformación usando el método correcto
+                # Envolver el contenido existente con comandos de transformación
+                content_stream = f"q\n{matrix.a} {matrix.b} {matrix.c} {matrix.d} {matrix.e} {matrix.f} cm\n"
 
-                # Mostrar la página original en la nueva posición
-                # show_pdf_page mantiene la calidad vectorial
-                dest_page.show_pdf_page(
-                    dest_rect,     # rectángulo destino
-                    source_doc,    # documento fuente
-                    page_num,      # página fuente
-                    clip=None,     # sin recorte
-                    rotate=0,      # sin rotación
-                    oc=0,          # sin contenido opcional
-                    overlay=True,  # en primer plano
-                    keep_proportion=True  # mantener proporción
-                )
+                # Insertar al inicio usando fitz.TOOLS
+                success = fitz.TOOLS._insert_contents(
+                    page, content_stream.encode(), False)
 
-            # Cerrar documento fuente
-            source_doc.close()
+                # Insertar comando de restauración al final
+                fitz.TOOLS._insert_contents(page, b"\nQ", True)
 
-            # Guardar documento procesado
+            # Guardar
             output_path = self.output_folder / input_path.name
-            dest_doc.save(output_path, garbage=3, deflate=True)
-            dest_doc.close()
+            doc.save(output_path)
+            doc.close()
 
             return True
 

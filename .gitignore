@@ -20,6 +20,8 @@ Thumbs.db
 # Archivos temporales
 *.tmp
 *.temp
+/Final
+/Temp
 
 # Logs
 *.log

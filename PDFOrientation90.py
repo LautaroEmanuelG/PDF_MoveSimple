@@ -1,6 +1,7 @@
 import fitz
 import os
 
+
 def normalize_orientation(input_path, output_path, target_orientation="vertical"):
     """
     Normaliza la orientación de las páginas de un archivo PDF.
@@ -10,7 +11,8 @@ def normalize_orientation(input_path, output_path, target_orientation="vertical"
     :param target_orientation: Orientación objetivo, "vertical" o "horizontal".
     """
     if target_orientation not in ["vertical", "horizontal"]:
-        raise ValueError("La orientación objetivo debe ser 'vertical' o 'horizontal'.")
+        raise ValueError(
+            "La orientación objetivo debe ser 'vertical' o 'horizontal'.")
 
     doc = fitz.open(input_path)
 
@@ -29,6 +31,7 @@ def normalize_orientation(input_path, output_path, target_orientation="vertical"
     doc.save(output_path)
     doc.close()
 
+
 if __name__ == "__main__":
     # Directorio de entrada y salida
     input_dir = "ToMove"
@@ -45,7 +48,8 @@ if __name__ == "__main__":
             output_path = os.path.join(output_dir, filename)
 
             print(f"Normalizando orientación de: {filename}")
-            normalize_orientation(input_path, output_path, target_orientation="vertical")
+            normalize_orientation(input_path, output_path,
+                                  target_orientation="vertical")
         else:
             print(f"Eliminando archivo no válido: {filename}")
             os.remove(input_path)
