@@ -20,7 +20,7 @@ DISPLACEMENT_X_MM = 0.0
 # Positivo = hacia ARRIBA (↑)
 # Negativo = hacia ABAJO (↓)
 # Valor en milímetros (mm)
-DISPLACEMENT_Y_MM = -4.0
+DISPLACEMENT_Y_MM = -1.8
 
 # 💡 EJEMPLOS DE CONFIGURACIÓN:
 # =============================
