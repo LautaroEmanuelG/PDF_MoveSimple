@@ -1,0 +1,10 @@
+# 📦 Dependencias del PDF Content Mover
+# Instalar con: pip install -r requirements.txt
+
+# PyMuPDF - Biblioteca principal para manipulación de PDFs
+PyMuPDF>=1.23.0
+
+# Dependencias adicionales para mejor compatibilidad
+# Estas se instalan automáticamente con PyMuPDF pero las listamos por claridad
+fitz
+fontTools>=4.0.0
